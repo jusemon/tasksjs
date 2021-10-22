@@ -1,0 +1,14 @@
+{
+  "name": "tasksjs",
+  "version": "1.0.0",
+  "description": "An application for tasks management",
+  "main": "index.ts",
+  "author": "Juan Sebastián Montoya <juansmm@outlook.com>",
+  "license": "MIT",
+  "scripts": {
+    "dev": "concurrently \"cd api && yarn dev\" \"cd app && yarn start\""
+  },
+  "devDependencies": {
+    "concurrently": "^6.3.0"
+  }
+}
