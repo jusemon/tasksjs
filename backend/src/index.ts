@@ -7,7 +7,7 @@ import { getConnection } from './database';
 
 dotenv.config();
 
-async function startServer() {
+(async () => {
   const port = process.env.SERVER_PORT;
   const logger = getLogger();
   const app = express();
@@ -17,6 +17,4 @@ async function startServer() {
   server.applyMiddleware({ app });
   await new Promise<void>(resolve => httpServer.listen({ port }, resolve))
   logger.debug(`Server started at http://localhost:${port}${server.graphqlPath}`);
-}
-
-startServer();
+})();
