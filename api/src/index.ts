@@ -1,20 +1,16 @@
+import dotenv from 'dotenv';
 import express from 'express';
-import { createLogger, format, transports } from 'winston';
-const logger = createLogger({
-    level: 'debug',
-    format: format.cli(),
-    defaultMeta: { service: 'api'},
-    transports: [
-        new transports.Console()
-    ]
-});
+import { getLogger } from './logger';
+
+dotenv.config();
+
 const app = express();
-const port = 8080;
+const logger = getLogger();
 
 app.get('/', (request, response) => {
-    response.send('Goodbye World!');
+  response.send('Testing world!');
 });
 
-app.listen(port, () => {
-    logger.debug(`Server started at http://localhost:${port}`);
+app.listen(process.env.SERVER_PORT, () => {
+  logger.debug(`Server started at http://localhost:${process.env.SERVER_PORT}`);
 });
