@@ -6,7 +6,7 @@
   "author": "Juan Sebastián Montoya <juansmm@outlook.com>",
   "license": "MIT",
   "scripts": {
-    "dev": "concurrently \"cd api && yarn dev\" \"cd app && yarn start\""
+    "dev": "concurrently \"cd backend && yarn dev\" \"cd frontend && yarn start\""
   },
   "devDependencies": {
     "concurrently": "^6.3.0"
