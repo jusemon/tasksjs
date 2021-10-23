@@ -1,7 +1,7 @@
-import { gql } from "apollo-server-express";
+import { gql } from 'apollo-server-express';
 
-import noteSchema from "./note";
-import customSchema from "./custom";
+import noteSchema from './note';
+import customSchema from './custom';
 
 const linkSchema = gql`
   type Query {

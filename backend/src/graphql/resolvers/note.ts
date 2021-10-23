@@ -6,7 +6,7 @@ import { ApolloContext } from '../../types/common';
 
 export default {
   Query: {
-    async getAllNotes (_: void, args: any, { conn, logger }: ApolloContext): Promise<INote[]> {
+    async getAllNotes(_: void, args: any, { conn, logger }: ApolloContext): Promise<INote[]> {
       const Note: mongoose.Model<INote> = NoteModel(conn);
       try {
         return await Note.find().exec();
@@ -15,7 +15,7 @@ export default {
         throw new ApolloError('Error retieving all notes');
       }
     },
-    async getNote (_: void, { _id }: INote, { conn, logger }: ApolloContext): Promise<INote> {
+    async getNote(_: void, { _id }: INote, { conn, logger }: ApolloContext): Promise<INote> {
       const Note: mongoose.Model<INote> = NoteModel(conn);
       try {
         return await Note.findById(_id).exec();
@@ -26,7 +26,7 @@ export default {
     }
   },
   Mutation: {
-    async saveNote (_: void, { title, content }: INote, { conn, logger }: ApolloContext): Promise<INote> {
+    async saveNote(_: void, { title, content }: INote, { conn, logger }: ApolloContext): Promise<INote> {
       const Note: mongoose.Model<INote> = NoteModel(conn);
       try {
         const note = await Note.create({
@@ -40,7 +40,7 @@ export default {
         throw new ApolloError('Error creating note');
       }
     },
-    async deleteNote (_: void, { _id }: INote, { conn, logger }: ApolloContext): Promise<INote> {
+    async deleteNote(_: void, { _id }: INote, { conn, logger }: ApolloContext): Promise<INote> {
       const Note: mongoose.Model<INote> = NoteModel(conn);
       try {
         const note = await Note.findByIdAndDelete(_id).exec();
