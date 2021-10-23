@@ -9,7 +9,7 @@ export const getLogger = () => {
       format: format.json(),
       defaultMeta: { service: 'api' },
       transports: [
-        new transports.File({ filename: '../logs/tasksjs-api.log' })
+        new transports.File({ filename: process.env.LOG_FILE })
       ]
     });
 
