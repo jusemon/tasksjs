@@ -6,4 +6,8 @@ You can start both frontend and backend running `yarn dev` in the root folder.
 
 ## Architecture
 
-![Diagram](docs/architecture.drawio.svg)
+![Architecture Diagram](docs/architecture.drawio.svg)
+
+## Database Model Diagram
+
+![Database Diagram](docs/database.drawio.svg)
