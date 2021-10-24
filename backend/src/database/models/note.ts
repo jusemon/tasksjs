@@ -9,7 +9,7 @@ export interface INote extends mongoose.Document {
 const schema: mongoose.SchemaDefinition = {
   title: { type: mongoose.SchemaTypes.String, required: true },
   content: { type: mongoose.SchemaTypes.String, required: true },
-  date: { type: mongoose.SchemaTypes.String, required: true },
+  date: { type: mongoose.SchemaTypes.Date, required: true },
 }
 
 const collectionName: string = 'note';

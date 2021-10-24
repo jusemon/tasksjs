@@ -1,21 +1,26 @@
-import winston, { createLogger, format, transports } from 'winston';
+import { createLogger, format, Logger, transports } from 'winston';
+import { isDevMode } from './utils';
 
-let logger: winston.Logger = null;
+let logger: Logger = null;
 
 export const getLogger = () => {
   if (logger === null) {
     logger = createLogger({
       level: 'debug',
-      format: format.json(),
+      format: format.combine(
+        format.timestamp({ format: 'YYYY-MM-DD HH:MM:SS' }),
+        format.printf(info => `[${info.timestamp}] ${info.level}: ${info.message}`)
+      ),
       defaultMeta: { service: 'api' },
       transports: [
         new transports.File({ filename: process.env.LOG_FILE })
-      ]
+      ],
     });
 
-    if (process.env.NODE_ENV !== 'production') {
+    if (isDevMode()) {
+      const colorizer = format.colorize();
       logger.add(new transports.Console({
-        format: format.cli(),
+        format: format.printf(info => colorizer.colorize(info.level, `[${info.timestamp}] ${info.level}: ${info.message}`))
       }));
     }
   }
