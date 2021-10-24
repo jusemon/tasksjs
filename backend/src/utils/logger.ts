@@ -1,5 +1,5 @@
 import { createLogger, format, Logger, transports } from 'winston';
-import { isDevMode } from './utils';
+import { isDevMode } from './common';
 
 let logger: Logger = null;
 
