@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
 import express from 'express';
-import { getLogger } from './logger';
+import { getLogger } from './utils';
 import http from 'http';
 import { getApolloServer } from './api/graphql';
 import { getConnection } from './database';
