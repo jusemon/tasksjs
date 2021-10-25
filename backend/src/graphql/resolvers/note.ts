@@ -45,6 +45,21 @@ export default {
         throw new ApolloError('Error creating note');
       }
     },
+    async updateNote(_: void, { _id, title, content }: INote, { conn, logger }: ApolloContext): Promise<INote> {
+      if (isDevMode()) logger.debug(`> updateNote ${inspect({ title, content })}`);
+      const Note: mongoose.Model<INote> = NoteModel(conn);
+      try {
+        await Note.findByIdAndUpdate(_id, {
+          title,
+          content,
+          date: dayjs().toDate()
+        }).exec();
+        return await Note.findById(_id).exec();
+      } catch (error) {
+        logger.error(`> updateNote error: ${error}`);
+        throw new ApolloError('Error updating note');
+      }
+    },
     async deleteNote(_: void, { _id }: INote, { conn, logger }: ApolloContext): Promise<INote> {
       if (isDevMode()) logger.debug(`> DeleteNote ${inspect({ _id })}`);
       const Note: mongoose.Model<INote> = NoteModel(conn);

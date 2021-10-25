@@ -8,6 +8,7 @@ export default gql`
 
   extend type Mutation {
     saveNote(title: String!, content: String!): Note!
+    updateNote(_id: ID!, title: String!, content: String!): Note!
     deleteNote(_id: ID!): Note
   }
 
