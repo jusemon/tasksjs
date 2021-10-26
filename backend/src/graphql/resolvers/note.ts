@@ -2,20 +2,21 @@ import mongoose from 'mongoose';
 import dayjs from 'dayjs';
 import NoteModel, { INote } from '../../database/models/note';
 import { ApolloError } from 'apollo-server-express';
-import { ApolloContext } from '../../types/common';
+import { ApolloContext, PagedArgs } from '../../types/common';
 import { isDevMode } from '../../utils';
 import { inspect } from 'util';
 
 export default {
   Query: {
-    async getAllNotes(_: void, __: void, { conn, logger }: ApolloContext): Promise<INote[]> {
-      if (isDevMode()) logger.debug('> getAllNotes');
+    async getNotes(_: void, { take, last }: PagedArgs, { conn, logger }: ApolloContext): Promise<INote[]> {
+      if (isDevMode()) logger.debug(`> getNotes ${inspect({take, last})}`);
       const Note: mongoose.Model<INote> = NoteModel(conn);
       try {
-        return await Note.find().exec();
+        const lastId = !!last ? last : Buffer.alloc(12).toString();
+        return await Note.find({_id: { $gt: lastId }}).limit(take).sort('id').exec();
       } catch (error) {
-        logger.error(`> getAllNotes error: ${inspect(error)}`);
-        throw new ApolloError('Error retieving all notes');
+        logger.error(`> getNotes error: ${inspect(error)}`);
+        throw new ApolloError('Error retieving notes');
       }
     },
     async getNote(_: void, { _id }: INote, { conn, logger }: ApolloContext): Promise<INote> {
@@ -70,6 +71,20 @@ export default {
         logger.error(`> deleteNote error: ${error}`);
         throw new ApolloError('Error deleting note');
       }
+    },
+    // For debugging
+    async deleteNotes(_: void, __: void, { conn, logger }: ApolloContext): Promise<INote[]> {
+      if (isDevMode()) logger.debug(`> DeleteNotes`);
+      const Note: mongoose.Model<INote> = NoteModel(conn);
+      try {
+        const note = await Note.find().exec();
+        await Note.deleteMany().exec();
+        return note;
+      } catch (error) {
+        logger.error(`> deleteNotes error: ${error}`);
+        throw new ApolloError('Error deleting note');
+      }
     }
+
   }
 };

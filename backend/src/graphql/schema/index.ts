@@ -4,6 +4,7 @@ import noteSchema from './note';
 import customSchema from './custom';
 import authSchema from './auth';
 import userSchema from './user';
+import teamSchema from './team';
 
 const linkSchema = gql`
   type Query {
@@ -19,4 +20,4 @@ const linkSchema = gql`
   }
 `;
 
-export default [linkSchema, noteSchema, authSchema, userSchema, customSchema];
+export default [linkSchema, noteSchema, authSchema, userSchema, teamSchema, customSchema];

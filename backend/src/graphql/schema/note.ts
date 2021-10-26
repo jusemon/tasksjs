@@ -2,7 +2,7 @@ import { gql } from 'apollo-server-express';
 
 export default gql`
   extend type Query {
-    getAllNotes: [Note!]
+    getNotes(take: Int!, last: ID): [Note!]
     getNote(_id: ID!): Note
   }
 
@@ -10,6 +10,7 @@ export default gql`
     saveNote(title: String!, content: String!): Note!
     updateNote(_id: ID!, title: String!, content: String!): Note!
     deleteNote(_id: ID!): Note
+    deleteNotes: [Note!]
   }
 
   type Note {
