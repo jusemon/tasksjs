@@ -3,16 +3,16 @@ import dayjs from 'dayjs';
 import NoteModel, { INote } from '../../database/models/note';
 import { ApolloError } from 'apollo-server-express';
 import { ApolloContext, PagedArgs } from '../../types/common';
-import { isDevMode } from '../../utils';
+import { isDevMode, getIdOrDefault } from '../../utils';
 import { inspect } from 'util';
 
 export default {
   Query: {
     async getNotes(_: void, { take, last }: PagedArgs, { conn, logger }: ApolloContext): Promise<INote[]> {
-      if (isDevMode()) logger.debug(`> getNotes ${inspect({take, last})}`);
+      const lastId = getIdOrDefault(last);
+      if (isDevMode()) logger.debug(`> getNotes ${inspect({take, last, lastId})}`);
       const Note: mongoose.Model<INote> = NoteModel(conn);
       try {
-        const lastId = !!last ? last : Buffer.alloc(12).toString();
         return await Note.find({_id: { $gt: lastId }}).limit(take).sort('id').exec();
       } catch (error) {
         logger.error(`> getNotes error: ${inspect(error)}`);

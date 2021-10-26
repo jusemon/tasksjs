@@ -2,9 +2,9 @@ import { gql } from 'apollo-server-express';
 
 export default gql`
   extend type Query {
-    getAllTeams: [Team!]
+    getTeams(take: Int!, last: ID): [Team!]
     getTeam(_id: ID!): Team
-    getTeamUsers: [User!]
+    getTeamUsers(_id: ID!): [User!]
   }
 
   extend type Mutation {

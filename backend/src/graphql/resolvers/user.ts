@@ -2,25 +2,26 @@ import mongoose from 'mongoose';
 import UserModel, { IUser } from '../../database/models/user';
 import AuthModel, { IAuth } from '../../database/models/auth';
 import { ApolloError } from 'apollo-server-express';
-import { ApolloContext } from '../../types/common';
-import { isDevMode, withTransaction } from '../../utils';
+import { ApolloContext, PagedArgs } from '../../types/common';
+import { getIdOrDefault, isDevMode, withTransaction } from '../../utils';
 import { inspect } from 'util';
 import { cipher } from '../../utils/crypt';
 
 
 export default {
   Query: {
-    async getAllUsers(_: void, __: void, { conn, logger }: ApolloContext): Promise<IUser[]> {
-      if (isDevMode()) logger.debug('> getAllUsers');
+    async getUsers(_: void, { take, last }: PagedArgs, { conn, logger }: ApolloContext): Promise<IUser[]> {
+      const lastId = getIdOrDefault(last);
+      if (isDevMode()) logger.debug(`> getUsers ${inspect({take, last, lastId})}`);
       const Auth: mongoose.Model<IAuth> = AuthModel(conn);
       const User: mongoose.Model<IUser> = UserModel(conn);
       try {
-        const users = await User.find().populate('auth').exec();
+        const users = await User.find({_id: { $gt: lastId }}).limit(take).sort('id').populate('auth').exec();
         users.forEach(u => u.auth.password = '');
         return users;
       } catch (error) {
-        logger.error(`> getAllUsers error: ${inspect(error)}`);
-        throw new ApolloError('Error retieving all users');
+        logger.error(`> getUsers error: ${inspect(error)}`);
+        throw new ApolloError('Error retieving users');
       }
     },
     async getUser(_: void, { _id }: IUser, { conn, logger }: ApolloContext): Promise<IUser> {
