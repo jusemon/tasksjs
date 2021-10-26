@@ -12,11 +12,11 @@ export default {
   Query: {
     async getUsers(_: void, { take, last }: PagedArgs, { conn, logger }: ApolloContext): Promise<IUser[]> {
       const lastId = getIdOrDefault(last);
-      if (isDevMode()) logger.debug(`> getUsers ${inspect({take, last, lastId})}`);
+      if (isDevMode()) logger.debug(`> getUsers ${inspect({ take, last, lastId })}`);
       const Auth: mongoose.Model<IAuth> = AuthModel(conn);
       const User: mongoose.Model<IUser> = UserModel(conn);
       try {
-        const users = await User.find({_id: { $gt: lastId }}).limit(take).sort('id').populate('auth').exec();
+        const users = await User.find({ _id: { $gt: lastId } }).limit(take).sort({ _id: 1 }).populate('auth').exec();
         users.forEach(u => u.auth.password = '');
         return users;
       } catch (error) {

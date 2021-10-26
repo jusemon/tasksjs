@@ -10,10 +10,10 @@ export default {
   Query: {
     async getNotes(_: void, { take, last }: PagedArgs, { conn, logger }: ApolloContext): Promise<INote[]> {
       const lastId = getIdOrDefault(last);
-      if (isDevMode()) logger.debug(`> getNotes ${inspect({take, last, lastId})}`);
+      if (isDevMode()) logger.debug(`> getNotes ${inspect({ take, last, lastId })}`);
       const Note: mongoose.Model<INote> = NoteModel(conn);
       try {
-        return await Note.find({_id: { $gt: lastId }}).limit(take).sort('id').exec();
+        return await Note.find({ _id: { $gt: lastId } }).limit(take).sort({ _id: 1 }).exec();
       } catch (error) {
         logger.error(`> getNotes error: ${inspect(error)}`);
         throw new ApolloError('Error retieving notes');

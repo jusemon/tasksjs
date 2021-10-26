@@ -13,7 +13,7 @@ export default {
       if (isDevMode()) logger.debug(`> getTeams ${inspect({ take, last, lastId })}`);
       const Team: mongoose.Model<ITeam> = TeamModel(conn);
       try {
-        return await Team.find({ _id: { $gt: lastId } }).limit(take).sort('id').exec();
+        return await Team.find({ _id: { $gt: lastId } }).limit(take).sort({ _id: 1 }).exec();
       } catch (error) {
         logger.error(`> getTeams error: ${inspect(error)}`);
         throw new ApolloError('Error retieving teams');
