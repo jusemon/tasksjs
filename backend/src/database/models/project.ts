@@ -14,8 +14,8 @@ export const projectCollectionName: string = 'project';
 const schema: mongoose.SchemaDefinition = {
   name: { type: mongoose.SchemaTypes.String, required: true },
   description: { type: mongoose.SchemaTypes.String, required: true },
-  team: { type: mongoose.SchemaTypes.ObjectId, ref: teamCollectionName, required: true },
-  tasks: [{ type: mongoose.SchemaTypes.ObjectId, ref: taskCollectionName }],
+  team: { type: mongoose.SchemaTypes.ObjectId, ref: () => teamCollectionName, required: true },
+  tasks: [{ type: mongoose.SchemaTypes.ObjectId, ref: () => taskCollectionName }],
 }
 
 const projectSchema: mongoose.Schema = new mongoose.Schema(schema);
