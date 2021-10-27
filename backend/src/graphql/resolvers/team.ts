@@ -21,26 +21,15 @@ export default {
     },
     async getTeam(_: void, { _id }: ITeam, { conn, logger }: ApolloContext): Promise<ITeam> {
       if (isDevMode()) logger.debug(`> getTeam ${inspect({ _id })}`);
+      UserModel(conn);
       const Team: mongoose.Model<ITeam> = TeamModel(conn);
       try {
-        return await Team.findById(_id).exec();
+        return await Team.findOne({ _id }).populate('users').exec();
       } catch (error) {
         logger.error(`> getTeam error: ${inspect(error)}`);
         throw new ApolloError(`Error retieving team with id ${_id}`);
       }
-    },
-    async getTeamUsers(_: void, { _id }: ITeam, { conn, logger }: ApolloContext): Promise<IUser[]> {
-      if (isDevMode()) logger.debug('> getTeamsUsers');
-      const User: mongoose.Model<IUser> = UserModel(conn);
-      // const Team: mongoose.Model<ITeam> = TeamModel(conn);
-      try {
-        return await User.find({ 'team._id': _id }).sort('id').exec();
-      } catch (error) {
-        logger.error(`> getTeams error: ${inspect(error)}`);
-        throw new ApolloError('Error retieving teams');
-      }
-    },
-
+    }
   },
   Mutation: {
     async saveTeam(_: void, { name, description }: ITeam, { conn, logger }: ApolloContext): Promise<ITeam> {
@@ -81,6 +70,28 @@ export default {
         logger.error(`> deleteTeam error: ${error}`);
         throw new ApolloError('Error deleting team');
       }
-    }
+    },
+    async addTeamUser(_: void, { _id, userId }: ITeam & { userId: any }, { conn, logger }: ApolloContext): Promise<ITeam> {
+      if (isDevMode()) logger.debug(`> addTeamUser ${inspect({ _id, userId })}`);
+      const Team: mongoose.Model<ITeam> = TeamModel(conn);
+      try {
+        const team = await Team.findByIdAndUpdate(_id, { $push: { 'users': { _id: userId } } }).populate('users').exec();
+        return team;
+      } catch (error) {
+        logger.error(`> addTeamUser error: ${error}`);
+        throw new ApolloError('Error adding user to team');
+      }
+    },
+    async removeTeamUser(_: void, { _id, userId }: ITeam & { userId: any }, { conn, logger }: ApolloContext): Promise<ITeam> {
+      if (isDevMode()) logger.debug(`> removeTeamUser ${inspect({ _id, userId })}`);
+      const Team: mongoose.Model<ITeam> = TeamModel(conn);
+      try {
+        const team = await Team.findByIdAndUpdate(_id, { $pull: { 'users': { _id: userId } } }).populate('users').exec();
+        return team;
+      } catch (error) {
+        logger.error(`> removeTeamUser error: ${error}`);
+        throw new ApolloError('Error removing user from team');
+      }
+    },
   }
 };

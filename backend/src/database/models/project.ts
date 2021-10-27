@@ -6,7 +6,7 @@ export interface IProject extends mongoose.Document {
   name: string;
   description: string;
   team: ITeam;
-  tasks: ITask;
+  tasks: ITask[];
 }
 
 export const projectCollectionName: string = 'project';

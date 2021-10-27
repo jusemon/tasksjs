@@ -12,7 +12,7 @@ export const teamCollectionName: string = 'team';
 const schema: mongoose.SchemaDefinition = {
   name: { type: mongoose.SchemaTypes.String, required: true },
   description: { type: mongoose.SchemaTypes.String, required: true },
-  users: [{ type: mongoose.SchemaTypes.ObjectId, ref: userCollectionName }],
+  users: [{ type: mongoose.SchemaTypes.ObjectId, ref: () => userCollectionName }],
 }
 
 const teamSchema: mongoose.Schema = new mongoose.Schema(schema);

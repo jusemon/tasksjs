@@ -20,7 +20,7 @@ export default gql`
       firstName: String!,
       lastName: String!,
       username: String!,
-      password: String!
+      password: String
     ): User!
     deleteUser(_id: ID!): User
   }

@@ -16,9 +16,7 @@ export default {
       const Auth: mongoose.Model<IAuth> = AuthModel(conn);
       const User: mongoose.Model<IUser> = UserModel(conn);
       try {
-        const users = await User.find({ _id: { $gt: lastId } }).limit(take).sort({ _id: 1 }).populate('auth').exec();
-        users.forEach(u => u.auth.password = '');
-        return users;
+        return await User.find({ _id: { $gt: lastId } }).limit(take).sort({ _id: 1 }).populate({ path: 'auth', select: '-password'}).exec();
       } catch (error) {
         logger.error(`> getUsers error: ${inspect(error)}`);
         throw new ApolloError('Error retieving users');
@@ -28,9 +26,7 @@ export default {
       if (isDevMode()) logger.debug(`> getUser ${inspect({ _id })}`);
       const User: mongoose.Model<IUser> = UserModel(conn);
       try {
-        const user = await User.findById(_id).populate('auth').exec();
-        user.auth.password = '';
-        return user;
+        return await User.findById(_id).populate({ path: 'auth', select: '-password'}).exec();
       } catch (error) {
         logger.error(`> getUser error: ${inspect(error)}`);
         throw new ApolloError(`Error retieving user with id ${_id}`);
@@ -45,7 +41,9 @@ export default {
       try {
         let user: IUser;
         await withTransaction(conn, async () => {
+          const authId = new mongoose.Types.ObjectId();
           const auth = await Auth.create({
+            _id: authId,
             username,
             password: await cipher(password)
           });
@@ -53,10 +51,12 @@ export default {
             email,
             firstName,
             lastName,
-            auth
+            auth: authId
           });
+          auth.password = null;
+          user.auth = auth;
+          logger.debug(`> saveUser ${inspect(user)}`)
         });
-        user.auth.password = '';
         return user;
       } catch (error) {
         logger.error(`> saveUser error: ${error}`);
@@ -100,7 +100,7 @@ export default {
         await withTransaction(conn, async () => {
           user = await User.findByIdAndDelete(_id).exec();
           if (user) {
-            const auth = await Auth.findByIdAndDelete(user.auth._id).exec();
+            const auth = await Auth.findByIdAndDelete(user.auth).exec();
             if (auth) {
               user.auth = auth;
               user.auth.password = '';

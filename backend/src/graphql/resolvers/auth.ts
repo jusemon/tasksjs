@@ -39,8 +39,7 @@ export default {
         await withTransaction(conn, async()=> {
           await User.deleteMany().exec();
           auths = await Auth.find().exec();
-          const res = User.deleteMany().exec();
-          logger.debug(`> clearAll deleted res ${inspect(res)}`);
+          await Auth.deleteMany().exec();
         });
         return auths;
       } catch (error) {

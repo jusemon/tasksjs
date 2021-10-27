@@ -16,6 +16,6 @@ export default gql`
   type Auth {
     _id: ID!
     username: String!
-    password: String!
+    password: String
   }
 `;
