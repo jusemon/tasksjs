@@ -16,7 +16,7 @@ export default {
       const Auth: mongoose.Model<IAuth> = AuthModel(conn);
       const User: mongoose.Model<IUser> = UserModel(conn);
       try {
-        return await User.find({ _id: { $gt: lastId } }).limit(take).sort({ _id: 1 }).populate({ path: 'auth', select: '-password'}).exec();
+        return await User.find({ _id: { $gt: lastId } }).limit(take).sort({ _id: 1 }).populate({ path: 'auth', select: '-password' }).exec();
       } catch (error) {
         logger.error(`> getUsers error: ${inspect(error)}`);
         throw new ApolloError('Error retieving users');
@@ -26,7 +26,7 @@ export default {
       if (isDevMode()) logger.debug(`> getUser ${inspect({ _id })}`);
       const User: mongoose.Model<IUser> = UserModel(conn);
       try {
-        return await User.findById(_id).populate({ path: 'auth', select: '-password'}).exec();
+        return await User.findById(_id).populate({ path: 'auth', select: '-password' }).exec();
       } catch (error) {
         logger.error(`> getUser error: ${inspect(error)}`);
         throw new ApolloError(`Error retieving user with id ${_id}`);
@@ -35,29 +35,26 @@ export default {
   },
   Mutation: {
     async saveUser(_: void, { email, firstName, lastName, username, password }: IUser & IAuth, { conn, logger }: ApolloContext): Promise<IUser> {
-      if (isDevMode()) logger.debug(`> saveUser ${inspect({ email, firstName, lastName })}`);
+      if (isDevMode()) logger.debug(`> saveUser ${inspect({ email, firstName, lastName, username, password })}`);
       const Auth: mongoose.Model<IAuth> = AuthModel(conn);
       const User: mongoose.Model<IUser> = UserModel(conn);
       try {
         let user: IUser;
+        let auth: IAuth;
         await withTransaction(conn, async () => {
           const authId = new mongoose.Types.ObjectId();
-          const auth = await Auth.create({
+          [auth, user] = await Promise.all([Auth.create({
             _id: authId,
             username,
             password: await cipher(password)
-          });
-          user = await User.create({
+          }), User.create({
             email,
             firstName,
             lastName,
             auth: authId
-          });
-          auth.password = null;
-          user.auth = auth;
-          logger.debug(`> saveUser ${inspect(user)}`)
+          })]);
         });
-        return user;
+        return await user.populate({ path: 'auth', select: '-password' });
       } catch (error) {
         logger.error(`> saveUser error: ${error}`);
         throw new ApolloError('Error creating user');
@@ -77,13 +74,12 @@ export default {
           const auth: { [key: string]: string } = {
             username
           };
-          if (typeof password !== 'undefined') {
+          if (typeof password !== 'undefined' && password !== null) {
             auth.password = password;
           }
 
           await Auth.findByIdAndUpdate(_id, auth).exec();
-          user = await User.findById(_id).populate('auth').exec();
-          user.auth.password = '';
+          user = await User.findById(_id).populate({ path: 'auth', select: '-password' }).exec();
         });
         return user;
       } catch (error) {
