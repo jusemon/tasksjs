@@ -10,8 +10,8 @@ export default gql`
     saveTeam(name: String!, description: String!): Team!
     updateTeam(_id: ID!, name: String!, description: String!): Team!
     deleteTeam(_id: ID!): Team
-    addTeamUser(_id: ID!, userId: String!): Team!
-    removeTeamUser(_id: ID!, userId: String!): Team!
+    addTeamUser(_id: ID!, userId: ID!): Team!
+    removeTeamUser(_id: ID!, userId: ID!): Team!
   }
 
   type Team {
