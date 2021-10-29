@@ -19,8 +19,14 @@ export default gql`
     _id: ID!
     name: String!
     description: String!
-    team: Team!
+    team: TeamProject!
     tasks: [Task!]
+  }
+
+  type TeamProject {
+    _id: ID!
+    name: String!
+    description: String!
   }
 
   type Task {
