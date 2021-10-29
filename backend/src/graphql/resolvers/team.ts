@@ -74,8 +74,13 @@ export default {
     async addTeamUser(_: void, { _id, userId }: ITeam & { userId: any }, { conn, logger }: ApolloContext): Promise<ITeam> {
       if (isDevMode()) logger.debug(`> addTeamUser ${inspect({ _id, userId })}`);
       const Team: mongoose.Model<ITeam> = TeamModel(conn);
+      UserModel(conn);
       try {
-        const team = await Team.findByIdAndUpdate(_id, { $push: { 'users': { _id: userId } } }).populate('users').exec();
+        const team = await Team.findById(_id).exec();
+        team.users.push(userId);
+        await team.save();
+        await team.populate('users');
+        if (isDevMode()) logger.debug(`> addTeamUser ${inspect({ teamA: team.toObject() })}`);
         return team;
       } catch (error) {
         logger.error(`> addTeamUser error: ${error}`);
