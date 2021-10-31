@@ -3,6 +3,7 @@ import { gql } from 'apollo-server-express';
 export default gql`
   extend type Query {
     getProjects(take: Int!, last: ID): [Project!]
+    getProjectsByTeam(teamId: ID): [Project!]
     getProject(_id: ID!): Project
   }
 

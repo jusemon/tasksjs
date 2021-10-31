@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose, { Types } from 'mongoose';
 import TeamModel from '../../database/models/team';
 import ProjectModel, { IProject } from '../../database/models/project';
 import { ITask } from '../../database/models/task';
@@ -20,6 +20,17 @@ export default {
       } catch (error) {
         logger.error(`> getProjects error: ${inspect(error)}`);
         throw new ApolloError('Error retieving projects');
+      }
+    },
+    async getProjectsByTeam(_: void, { teamId }: { teamId: any }, { conn, logger }: ApolloContext): Promise<IProject[]> {
+      if (isDevMode()) logger.debug(`> getProjectsByTeam ${inspect({ teamId })}`);
+      const Project: mongoose.Model<IProject> = ProjectModel(conn);
+      TeamModel(conn);
+      try {
+        return await Project.find({ team: { $eq: teamId} }).populate('team').sort({ _id: 1 }).exec();
+      } catch (error) {
+        logger.error(`> getProjectsByTeam error: ${inspect(error)}`);
+        throw new ApolloError('Error retieving projects by team id');
       }
     },
     async getProject(_: void, { _id }: IProject, { conn, logger }: ApolloContext): Promise<IProject> {
