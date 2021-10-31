@@ -1,4 +1,4 @@
-import mongoose, { Types } from 'mongoose';
+import mongoose from 'mongoose';
 import TeamModel from '../../database/models/team';
 import ProjectModel, { IProject } from '../../database/models/project';
 import { ITask } from '../../database/models/task';
