@@ -8,7 +8,7 @@ export const getLogger = () => {
     logger = createLogger({
       level: 'debug',
       format: format.combine(
-        format.timestamp({ format: 'YYYY-MM-DD HH:MM:SS' }),
+        format.timestamp({ format: 'YYYY-MM-DD HH:mm:SS' }),
         format.printf(info => `[${info.timestamp}] ${info.level}: ${info.message}`)
       ),
       defaultMeta: { service: 'api' },

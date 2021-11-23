@@ -9,8 +9,8 @@ export const getApolloServer = (httpServer: Server, context: ApolloContext) => {
   return new ApolloServer({
     typeDefs,
     resolvers,
-    context: async () => {
-      return context;
+    context: async (ctx) => {
+      return {...context, ctx};
     },
     plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
     introspection: true

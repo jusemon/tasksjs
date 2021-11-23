@@ -8,7 +8,7 @@
   "scripts": {
     "prebuild": "tslint -c tslint.json -p tsconfig.json --fix",
     "build": "tsc",
-    "prestart": "npm run build",
+    "prestart": "yarn run build",
     "start": "node .",
     "dev": "nodemon src/index.ts"
   },

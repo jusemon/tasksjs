@@ -15,10 +15,11 @@ export default {
       const Auth: mongoose.Model<IAuth> = AuthModel(conn);
       const User: mongoose.Model<IUser> = UserModel(conn);
       try {
-        const auth = await Auth.findOne((a: IAuth) => a.username === username).exec();
+        const auth = await Auth.findOne({username}).exec();
+        if(!auth) return;
         const match = await compare(password, auth.password);
         if (match) {
-          const user = await User.findOne((u: IUser) => u.auth._id === auth._id).exec();
+          const user = await User.findOne({auth: auth._id}).exec();
           const token = jwt.sign({ user: user.toJSON() }, process.env.SECRET, { expiresIn: 1440 });
           return { token };
         }

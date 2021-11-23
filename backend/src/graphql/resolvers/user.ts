@@ -3,7 +3,7 @@ import UserModel, { IUser } from '../../database/models/user';
 import AuthModel, { IAuth } from '../../database/models/auth';
 import { ApolloError } from 'apollo-server-express';
 import { ApolloContext, PagedArgs } from '../../types/common';
-import { getIdOrDefault, isDevMode, withTransaction } from '../../utils';
+import { getIdOrDefault, getLogger, isDevMode, withTransaction } from '../../utils';
 import { inspect } from 'util';
 import { cipher } from '../../utils/crypt';
 
@@ -31,6 +31,12 @@ export default {
         logger.error(`> getUser error: ${inspect(error)}`);
         throw new ApolloError(`Error retieving user with id ${_id}`);
       }
+    },
+    async me(_: void, __: any, {conn, logger, ctx}: ApolloContext): Promise<IUser> {
+      logger.debug(`[context keys  ] - ${Object.keys(ctx.req)}`);
+      logger.debug(`[context header] - ${(ctx.req.headers) ? Object.keys(ctx.req.headers) : null}`);
+      logger.debug(`[context header authorizaton] - ${(ctx.req.headers && ctx.req.headers.authorization) ? ctx.req.headers.authorization : null}`);
+      return null;
     }
   },
   Mutation: {
@@ -40,10 +46,9 @@ export default {
       const User: mongoose.Model<IUser> = UserModel(conn);
       try {
         let user: IUser;
-        let auth: IAuth;
         await withTransaction(conn, async () => {
           const authId = new mongoose.Types.ObjectId();
-          [auth, user] = await Promise.all([Auth.create({
+          [, user] = await Promise.all([Auth.create({
             _id: authId,
             username,
             password: await cipher(password)

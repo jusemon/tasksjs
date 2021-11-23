@@ -12,7 +12,7 @@ dotenv.config();
   const logger = getLogger();
   const app = express();
   const httpServer = http.createServer(app);
-  const server = getApolloServer(httpServer, { conn: await getConnection(), logger })
+  const server = getApolloServer(httpServer, { conn: await getConnection(), logger, ctx: null })
   await server.start();
   server.applyMiddleware({ app });
   await new Promise<void>(resolve => httpServer.listen({ port }, resolve))
